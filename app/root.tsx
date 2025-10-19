@@ -1,6 +1,21 @@
 import { Header } from '@layout/Header';
-import { Links, Meta, Outlet, Scripts, ScrollRestoration, isRouteErrorResponse } from 'react-router';
+import {
+  Links,
+  type LoaderFunctionArgs,
+  Meta,
+  Outlet,
+  Scripts,
+  ScrollRestoration,
+  data,
+  isRouteErrorResponse,
+} from 'react-router';
+import { Toaster } from 'sonner';
 import 'swiper/css';
+import { userCookie } from '~/cookies.server';
+
+import { AuthModal } from '@components/modals/AuthModal';
+
+import { mainAPI } from '@api/config';
 
 import type { Route } from './+types/root';
 import './app.css';
@@ -17,6 +32,29 @@ export const links: Route.LinksFunction = () => [
     href: 'https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap',
   },
 ];
+
+export async function loader({ request }: LoaderFunctionArgs) {
+  const cookieHeader = request.headers.get('Cookie');
+  const cookie = (await userCookie.parse(cookieHeader)) || {};
+
+  try {
+    if (!cookie.publicToken) {
+      const resp = await mainAPI.post('/security/token', null, {
+        headers: {
+          key: process.env.PLATFORM_KEY,
+        },
+      });
+      if (resp.data?.data?.token) {
+        cookie.publicToken = resp.data?.data?.token;
+        return data(null, {
+          headers: {
+            'Set-Cookie': await userCookie.serialize(cookie),
+          },
+        });
+      }
+    }
+  } catch {}
+}
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -35,7 +73,12 @@ export function Layout({ children }: { children: React.ReactNode }) {
       </head>
       <body>
         <Header />
+        <AuthModal />
         {children}
+        <Toaster
+          position="top-right"
+          richColors
+        />
         <ScrollRestoration />
         <Scripts />
       </body>

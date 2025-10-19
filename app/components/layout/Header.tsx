@@ -6,6 +6,7 @@ import { Link } from 'react-router';
 
 import { SearchInput } from '@ui/input/SearchInput';
 
+import { useAuthModalStore } from '@stores/authModalStore';
 import { useMenuStore } from '@stores/menuStore';
 
 import { cn } from '@libs/cn';
@@ -13,6 +14,8 @@ import { cn } from '@libs/cn';
 export function Header() {
   const setIsOpen = useMenuStore((state) => state.setIsOpen);
   const isOpen = useMenuStore((state) => state.isOpen);
+  const setIsAuthModalOpen = useAuthModalStore((state) => state.setIsOpen);
+  const isAuthModalOpen = useAuthModalStore((state) => state.isOpen);
   const [isHeaderHiding, setIsHeaderHiding] = useState<boolean>(false);
 
   const menuReference = useRef<HTMLDivElement | null>(null);
@@ -33,6 +36,22 @@ export function Header() {
       lastScroll = currentScroll;
     });
   }, []);
+
+  useEffect(() => {
+    if (isAuthModalOpen) {
+      document.body.style.overflow = 'hidden';
+      if (document.body.offsetWidth > 768) {
+        document.body.style.paddingRight = '15px';
+      }
+    } else {
+      setTimeout(() => {
+        document.body.style.overflow = '';
+        if (document.body.offsetWidth > 768) {
+          document.body.style.paddingRight = '0px';
+        }
+      }, 150);
+    }
+  }, [isAuthModalOpen]);
 
   function mouseOut(element: MouseEvent<HTMLDivElement>) {
     if (
@@ -119,9 +138,12 @@ export function Header() {
             >
               <ShoppingCartIcon className="stroke-on-surface-variant aspect-square w-6" />
             </Link>
-            <div className="bg-surface-bright grid place-content-center rounded-full p-3">
+            <Button
+              onPress={() => setIsAuthModalOpen(true)}
+              className="bg-surface-bright grid place-content-center rounded-full p-3"
+            >
               <UserIcon className="stroke-on-surface-variant aspect-square w-6" />
-            </div>
+            </Button>
             <Button
               onPress={() => setIsOpen((previous) => !previous)}
               className={cn({

@@ -1,7 +1,6 @@
-import Medusa from '@medusajs/js-sdk';
+import axios from 'axios';
 
-export const sdk = new Medusa({
-  baseUrl: import.meta.env.VITE_BACKEND_URL,
-  debug: import.meta.env.DEV,
-  publishableKey: import.meta.env.VITE_PUBLISHABLE_KEY,
+export const mainAPI = axios.create({
+  baseURL: 'http://localhost:5000/api',
+  timeout: 3000,
 });

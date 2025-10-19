@@ -16,8 +16,11 @@
   "dependencies": {
     "@medusajs/js-sdk": "^2.8.8",
     "@medusajs/types": "^2.8.8",
+    "@radix-ui/react-slot": "^1.2.3",
     "@react-router/node": "^7.7.1",
     "@react-router/serve": "^7.7.1",
+    "axios": "^1.12.2",
+    "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "isbot": "^5.1.27",
     "lucide-react": "^0.536.0",
@@ -25,8 +28,10 @@
     "react-aria-components": "^1.11.0",
     "react-dom": "^19.1.0",
     "react-router": "^7.7.1",
+    "sonner": "^2.0.7",
     "swiper": "^11.2.10",
     "tailwind-merge": "^3.3.1",
+    "zod": "^4.1.12",
     "zustand": "^5.0.7"
   },
   "devDependencies": {
@@ -53,6 +58,7 @@
     "prettier": "^3.6.2",
     "prettier-plugin-tailwindcss": "^0.6.14",
     "tailwindcss": "^4.1.4",
+    "tw-animate-css": "^1.3.8",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.38.0",
     "vite": "^6.3.3",
