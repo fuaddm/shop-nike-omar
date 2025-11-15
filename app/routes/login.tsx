@@ -1,7 +1,8 @@
+import { data } from 'react-router';
 import { z } from 'zod';
 import { userCookie } from '~/cookies.server';
 
-import { mainAPI } from '@api/config';
+import { publicAPI } from '@api/public-api';
 
 import type { Route } from '.react-router/types/app/routes/+types/login';
 
@@ -48,14 +49,29 @@ export async function action({ request }: Route.ActionArgs) {
   };
 
   try {
-    const data = formSchema.parse(raw);
-    const resp = await mainAPI.post('/security/sign-in', data, {
+    const parsedData = formSchema.parse(raw);
+
+    const resp = await publicAPI.post('/security/sign-in', cookie, {
+      body: JSON.stringify(parsedData),
       headers: {
         token: cookie.publicToken,
+        'Content-Type': 'application/json',
       },
     });
 
-    return { success: true, data };
+    const respData = await resp.json();
+
+    cookie.privateToken = respData?.data?.token;
+    cookie.rememberMeToken = respData?.data?.rememberMeToken;
+
+    return data(
+      { success: true, data },
+      {
+        headers: {
+          'Set-Cookie': await userCookie.serialize(cookie),
+        },
+      }
+    );
   } catch (error) {
     if (error instanceof z.ZodError) {
       const errors: Record<string, string> = {};

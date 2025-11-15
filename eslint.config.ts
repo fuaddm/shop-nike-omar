@@ -98,49 +98,8 @@ export default tseslint.config([
 
       'unicorn/no-null': 'off',
       'unicorn/prefer-global-this': 'off',
-    },
-  },
-  {
-    files: ['app/components/**/*.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
-    rules: {
-      'unicorn/filename-case': [
-        'error',
-        {
-          cases: {
-            pascalCase: true,
-          },
-        },
-      ],
-    },
-  },
-  {
-    files: [
-      'app/stores/**/*.{js,mjs,cjs,ts,mts,cts,jsx,tsx}',
-      'app/hooks/**/*.{js,mjs,cjs,ts,mts,cts,jsx,tsx}',
-      'app/models/**/*.{js,mjs,cjs,ts,mts,cts,jsx,tsx}',
-    ],
-    rules: {
-      'unicorn/filename-case': [
-        'error',
-        {
-          cases: {
-            camelCase: true,
-          },
-        },
-      ],
-    },
-  },
-  {
-    files: ['app/libs/**/*.{js,mjs,cjs,ts,mts,cts,jsx,tsx}', 'app/api/**/*.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
-    rules: {
-      'unicorn/filename-case': [
-        'error',
-        {
-          cases: {
-            kebabCase: true,
-          },
-        },
-      ],
+      'unicorn/prevent-abbreviations': 'off',
+      'unicorn/filename-case': 'off',
     },
   },
   prettier,

@@ -1,3 +1,6 @@
+import { Link, useLoaderData } from 'react-router';
+import type { loader } from '~/root';
+
 import { useMenuStore } from '@stores/menuStore';
 
 import { useLockBodyScroll } from '@hooks/useLockScroll';
@@ -6,7 +9,7 @@ import { cn } from '@libs/cn';
 
 import type { IMenuProperties } from '@models/components/layout/menu';
 
-export function Menu({ ref, mouseOut, ...properties }: IMenuProperties) {
+export function Menu({ ref, mouseOut, selectedMainCategoryId, ...properties }: IMenuProperties) {
   const isOpen = useMenuStore((state) => state.isOpen);
   const setIsOpen = useMenuStore((state) => state.setIsOpen);
 
@@ -28,13 +31,18 @@ export function Menu({ ref, mouseOut, ...properties }: IMenuProperties) {
           'visible opacity-100': isOpen,
         })}
       ></div>
-      <MenuMain mouseOut={mouseOut} />
+      <MenuMain
+        selectedMainCategoryId={selectedMainCategoryId}
+        mouseOut={mouseOut}
+      />
     </div>
   );
 }
 
-function MenuMain({ mouseOut }: Pick<IMenuProperties, 'mouseOut'>) {
+function MenuMain({ mouseOut, selectedMainCategoryId }: Omit<IMenuProperties, 'ref'>) {
   const isOpen = useMenuStore((state) => state.isOpen);
+  const setIsOpen = useMenuStore((state) => state.setIsOpen);
+  const loaderData = useLoaderData<typeof loader>();
 
   return (
     <div
@@ -44,34 +52,39 @@ function MenuMain({ mouseOut }: Pick<IMenuProperties, 'mouseOut'>) {
         'translate-y-0 opacity-100': isOpen,
       })}
     >
-      <div className="container flex flex-wrap justify-center gap-20">
-        <div className="flex flex-col gap-1">
-          <div className="mb-1 font-bold">New & Featured</div>
-          <div className="text-on-surface-variant text-sm">Shop Sale: New Styles Added</div>
-          <div className="text-on-surface-variant text-sm">Best Sellers</div>
-          <div className="text-on-surface-variant text-sm">Latest Drops</div>
-          <div className="text-on-surface-variant text-sm">Nike x LEGO® Collection</div>
-          <div className="text-on-surface-variant text-sm">New Arrivals</div>
-          <div className="text-on-surface-variant text-sm">SNKRS Launch Calendar</div>
-        </div>
-        <div className="flex flex-col gap-1">
-          <div className="mb-1 font-bold">Shop New</div>
-          <div className="text-on-surface-variant text-sm">New Arrivals</div>
-          <div className="text-on-surface-variant text-sm">Nike x LEGO® Collection</div>
-          <div className="text-on-surface-variant text-sm">Latest Drops</div>
-          <div className="text-on-surface-variant text-sm">Shop Sale: New Styles Added</div>
-          <div className="text-on-surface-variant text-sm">SNKRS Launch Calendar</div>
-          <div className="text-on-surface-variant text-sm">Best Sellers</div>
-        </div>
-        <div className="flex flex-col gap-1">
-          <div className="mb-1 font-bold">Trending</div>
-          <div className="text-on-surface-variant text-sm">SNKRS Launch Calendar</div>
-          <div className="text-on-surface-variant text-sm">New Arrivals</div>
-          <div className="text-on-surface-variant text-sm">Nike x LEGO® Collection</div>
-          <div className="text-on-surface-variant text-sm">Best Sellers</div>
-          <div className="text-on-surface-variant text-sm">Latest Drops</div>
-          <div className="text-on-surface-variant text-sm">Shop Sale: New Styles Added</div>
-        </div>
+      <div className="container flex flex-col flex-wrap justify-center gap-4 md:flex-row md:gap-20">
+        {loaderData.hierarchy &&
+          loaderData.hierarchy.data.hierarchies.find((mainCategory) => mainCategory.id === selectedMainCategoryId) &&
+          loaderData.hierarchy.data.hierarchies
+            .find((mainCategory) => mainCategory.id === selectedMainCategoryId)
+            .categories.map((category) => {
+              return (
+                <div
+                  key={category.id}
+                  className="flex flex-col gap-1"
+                >
+                  <Link
+                    to={`/products?MainCategoryId=${selectedMainCategoryId}&CategoryId=${category.id}`}
+                    onClick={() => setIsOpen(false)}
+                    className="mb-1 font-bold"
+                  >
+                    {category.name}
+                  </Link>
+                  {category.sub_categories.map((subCategory) => {
+                    return (
+                      <Link
+                        key={subCategory.id}
+                        onClick={() => setIsOpen(false)}
+                        to={`/products?MainCategoryId=${selectedMainCategoryId}&CategoryId=${category.id}&SubCategoryId=${subCategory.id}`}
+                        className="text-on-surface-variant text-sm"
+                      >
+                        {subCategory.name}
+                      </Link>
+                    );
+                  })}
+                </div>
+              );
+            })}
       </div>
     </div>
   );

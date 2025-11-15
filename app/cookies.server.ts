@@ -1,5 +1,11 @@
 import { createCookie } from 'react-router';
 
+export interface IUserCookie {
+  publicToken?: string;
+  privateToken?: string;
+  rememberMeToken?: string;
+}
+
 export const userCookie = createCookie('user', {
-  maxAge: 10_800_000, // one week
+  maxAge: 60 * 60 * 3,
 });

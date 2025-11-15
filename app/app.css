@@ -61,6 +61,34 @@
   --color-surface-container: rgb(241 236 244);
   --color-surface-container-high: rgb(235 230 239);
   --color-surface-container-highest: rgb(229 225 233);
+
+  --color-card: oklch(1 0 0);
+  --color-card-foreground: oklch(0.145 0 0);
+  --color-popover: oklch(1 0 0);
+  --color-popover-foreground: oklch(0.145 0 0);
+  --color-primary-foreground: oklch(0.985 0 0);
+  --color-secondary-foreground: oklch(0.205 0 0);
+  --color-muted: oklch(0.97 0 0);
+  --color-muted-foreground: oklch(0.556 0 0);
+  --color-accent: oklch(0.97 0 0);
+  --color-accent-foreground: oklch(0.205 0 0);
+  --color-destructive: oklch(0.577 0.245 27.325);
+  --color-border: oklch(0.922 0 0);
+  --color-input: oklch(0.922 0 0);
+  --color-ring: oklch(0.708 0 0);
+  --color-chart-1: oklch(0.646 0.222 41.116);
+  --color-chart-2: oklch(0.6 0.118 184.704);
+  --color-chart-3: oklch(0.398 0.07 227.392);
+  --color-chart-4: oklch(0.828 0.189 84.429);
+  --color-chart-5: oklch(0.769 0.188 70.08);
+  --color-sidebar: oklch(0.985 0 0);
+  --color-sidebar-foreground: oklch(0.145 0 0);
+  --color-sidebar-primary: oklch(0.205 0 0);
+  --color-sidebar-primary-foreground: oklch(0.985 0 0);
+  --color-sidebar-accent: oklch(0.97 0 0);
+  --color-sidebar-accent-foreground: oklch(0.205 0 0);
+  --color-sidebar-border: oklch(0.922 0 0);
+  --color-sidebar-ring: oklch(0.708 0 0);
 }
 
 .dark {
@@ -113,6 +141,34 @@
   --color-surface-container: rgb(32 31 37);
   --color-surface-container-high: rgb(42 41 47);
   --color-surface-container-highest: rgb(53 52 58);
+
+  --color-card: oklch(0.205 0 0);
+  --color-card-foreground: oklch(0.985 0 0);
+  --color-popover: oklch(0.205 0 0);
+  --color-popover-foreground: oklch(0.985 0 0);
+  --color-primary-foreground: oklch(0.205 0 0);
+  --color-secondary-foreground: oklch(0.985 0 0);
+  --color-muted: oklch(0.269 0 0);
+  --color-muted-foreground: oklch(0.708 0 0);
+  --color-accent: oklch(0.269 0 0);
+  --color-accent-foreground: oklch(0.985 0 0);
+  --color-destructive: oklch(0.704 0.191 22.216);
+  --color-border: oklch(1 0 0 / 10%);
+  --color-input: oklch(1 0 0 / 15%);
+  --color-ring: oklch(0.556 0 0);
+  --color-chart-1: oklch(0.488 0.243 264.376);
+  --color-chart-2: oklch(0.696 0.17 162.48);
+  --color-chart-3: oklch(0.769 0.188 70.08);
+  --color-chart-4: oklch(0.627 0.265 303.9);
+  --color-chart-5: oklch(0.645 0.246 16.439);
+  --color-sidebar: oklch(0.205 0 0);
+  --color-sidebar-foreground: oklch(0.985 0 0);
+  --color-sidebar-primary: oklch(0.488 0.243 264.376);
+  --color-sidebar-primary-foreground: oklch(0.985 0 0);
+  --color-sidebar-accent: oklch(0.269 0 0);
+  --color-sidebar-accent-foreground: oklch(0.985 0 0);
+  --color-sidebar-border: oklch(1 0 0 / 10%);
+  --color-sidebar-ring: oklch(0.556 0 0);
 }
 
 html,
@@ -160,4 +216,34 @@ body {
   .swiper:not(.swiper-initialized) .swiper-slide:nth-child(n + 3) {
     display: none;
   }
+}
+
+/*
+ * Minimalist Scrollbar CSS
+ * Uses proprietary ::-webkit-scrollbar pseudo-elements for styling,
+ * providing the best cross-browser (Chrome, Safari, newer Edge, Opera) support currently available.
+ * These styles should be applied to the element containing scrollable content (e.g., body, div).
+ */
+
+/* 1. Define the overall scrollbar area width/height */
+.minimalist-scrollbar::-webkit-scrollbar {
+  width: 8px; /* Vertical scrollbar width */
+  height: 8px; /* Horizontal scrollbar height */
+}
+
+/* 2. Style the track (the area behind the thumb) */
+.minimalist-scrollbar::-webkit-scrollbar-track {
+  background: transparent; /* Very light grey track */
+  border-radius: 10px;
+}
+
+/* 3. Style the thumb (the draggable element) */
+.minimalist-scrollbar::-webkit-scrollbar-thumb {
+  background: #cccccc; /* Light grey thumb */
+  border-radius: 10px;
+}
+
+/* 4. Style the thumb on hover for better UX */
+.minimalist-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8; /* Slightly darker grey on hover */
 }

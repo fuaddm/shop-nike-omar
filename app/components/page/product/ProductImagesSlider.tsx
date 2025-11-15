@@ -49,7 +49,7 @@ export function ProductImagesSlider({ images }: IProductImagesSliderProperties) 
           <Button
             key={image.id}
             onPress={() => swipeTo(index)}
-            className="focus:outline-outline hover:outline-outline-variant aspect-square w-full rounded-2xl bg-neutral-100 outline-2 outline-transparent transition"
+            className="focus:outline-outline hover:outline-outline-variant aspect-square w-full overflow-hidden rounded-2xl bg-neutral-100 outline-2 outline-transparent transition"
           >
             <img
               className="h-full w-full object-contain"

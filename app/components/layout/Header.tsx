@@ -1,8 +1,10 @@
 import { Menu } from '@layout/Menu';
-import { Menu as MenuIcon, SearchIcon, ShoppingCartIcon, UserIcon } from 'lucide-react';
+import { UserButton } from '@layout/UserButton';
+import { Heart, Menu as MenuIcon, SearchIcon, ShoppingCartIcon } from 'lucide-react';
 import { type MouseEvent, useEffect, useRef, useState } from 'react';
 import { Button } from 'react-aria-components';
-import { Link } from 'react-router';
+import { Link, useLoaderData } from 'react-router';
+import type { loader } from '~/root';
 
 import { SearchInput } from '@ui/input/SearchInput';
 
@@ -12,9 +14,13 @@ import { useMenuStore } from '@stores/menuStore';
 import { cn } from '@libs/cn';
 
 export function Header() {
+  const loaderData = useLoaderData<typeof loader>();
+  const isAuth = loaderData.user?.isAuth;
+  const favCount = loaderData.favourites?.data.length ?? 0;
+
   const setIsOpen = useMenuStore((state) => state.setIsOpen);
   const isOpen = useMenuStore((state) => state.isOpen);
-  const setIsAuthModalOpen = useAuthModalStore((state) => state.setIsOpen);
+  const [selectedMainCategory, setSelectedMainCategoryId] = useState<number | null>(null);
   const isAuthModalOpen = useAuthModalStore((state) => state.isOpen);
   const [isHeaderHiding, setIsHeaderHiding] = useState<boolean>(false);
 
@@ -71,7 +77,7 @@ export function Header() {
     <>
       <div
         className={cn({
-          'bg-surface-container-low sticky top-0 left-0 z-1000 w-full transition duration-400': true,
+          'bg-surface-container-low sticky top-0 left-0 z-50 w-full transition duration-400': true,
           '-translate-y-full': isHeaderHiding,
         })}
       >
@@ -84,46 +90,25 @@ export function Header() {
           </Link>
           <div
             ref={navReference}
-            onMouseEnter={() => setIsOpen(true)}
             onMouseOut={mouseOut}
             className="relative z-0 hidden h-[72px] w-fit items-center justify-center justify-self-center lg:flex"
           >
-            <Link
-              to="/"
-              className="flex h-full items-center px-3 decoration-2 underline-offset-8 hover:underline"
-            >
-              New
-            </Link>
-            <Link
-              to="/"
-              className="flex h-full items-center px-3 decoration-2 underline-offset-8 hover:underline"
-            >
-              Men
-            </Link>
-            <Link
-              to="/"
-              className="flex h-full items-center px-3 decoration-2 underline-offset-8 hover:underline"
-            >
-              Women
-            </Link>
-            <Link
-              to="/"
-              className="flex h-full items-center px-3 decoration-2 underline-offset-8 hover:underline"
-            >
-              Kids
-            </Link>
-            <Link
-              to="/"
-              className="flex h-full items-center px-3 decoration-2 underline-offset-8 hover:underline"
-            >
-              Jordan
-            </Link>
-            <Link
-              to="/"
-              className="flex h-full items-center px-3 decoration-2 underline-offset-8 hover:underline"
-            >
-              Sport
-            </Link>
+            {loaderData.hierarchy &&
+              loaderData.hierarchy.data.hierarchies.map((mainCategory) => {
+                return (
+                  <Link
+                    onMouseEnter={() => {
+                      setIsOpen(true);
+                      setSelectedMainCategoryId(mainCategory.id);
+                    }}
+                    key={mainCategory.id}
+                    to={`/products?MainCategoryId=${mainCategory.id}`}
+                    className="flex h-full items-center px-3 decoration-2 underline-offset-8 hover:underline"
+                  >
+                    {mainCategory.name}
+                  </Link>
+                );
+              })}
           </div>
           <div className="flex items-center justify-end gap-3">
             <div className="bg-surface-bright grid place-content-center rounded-full p-3 lg:hidden">
@@ -132,18 +117,28 @@ export function Header() {
             <div className="hidden lg:block">
               <SearchInput />
             </div>
-            <Link
-              to="/"
-              className="bg-surface-bright grid place-content-center rounded-full p-3"
-            >
-              <ShoppingCartIcon className="stroke-on-surface-variant aspect-square w-6" />
-            </Link>
-            <Button
-              onPress={() => setIsAuthModalOpen(true)}
-              className="bg-surface-bright grid place-content-center rounded-full p-3"
-            >
-              <UserIcon className="stroke-on-surface-variant aspect-square w-6" />
-            </Button>
+            {isAuth && (
+              <Link
+                to="/basket"
+                className="bg-surface-bright grid place-content-center rounded-full p-3"
+              >
+                <ShoppingCartIcon className="stroke-on-surface-variant aspect-square w-6" />
+              </Link>
+            )}
+            {isAuth && (
+              <Link
+                to="/favourites"
+                className="bg-surface-bright relative grid place-content-center rounded-full p-3"
+              >
+                <Heart className="stroke-on-surface-variant aspect-square w-6" />
+                {favCount !== 0 && (
+                  <div className="bg-tertiary absolute -top-2 -right-2 rounded-full px-2.5 py-0.5 text-sm text-white">
+                    {favCount}
+                  </div>
+                )}
+              </Link>
+            )}
+            <UserButton />
             <Button
               onPress={() => setIsOpen((previous) => !previous)}
               className={cn({
@@ -157,6 +152,7 @@ export function Header() {
         </div>
         <Menu
           ref={menuReference}
+          selectedMainCategoryId={selectedMainCategory}
           mouseOut={mouseOut}
         />
       </div>

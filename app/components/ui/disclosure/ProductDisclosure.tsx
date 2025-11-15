@@ -27,7 +27,7 @@ export function ProductDisclosure({ additionalInformations }: IProductDisclosure
                 </div>
               </Button>
             </Heading>
-            <DisclosurePanel className="group-data-[expanded]:px-3 group-data-[expanded]:pb-4">
+            <DisclosurePanel className="text-neutral-600 group-data-[expanded]:px-3 group-data-[expanded]:pb-4">
               <p>{item.text}</p>
             </DisclosurePanel>
           </Disclosure>

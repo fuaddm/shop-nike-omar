@@ -8,27 +8,44 @@ import type Swiper from 'swiper';
 import 'swiper/css';
 import { Swiper as SwiperComp, SwiperSlide } from 'swiper/react';
 
+import { InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot } from '@ui/InputOtp';
+
 import { useAuthModalStore } from '@stores/authModalStore';
 
 import { cn } from '@libs/cn';
 
 export function AuthModal() {
-  const swiperRef = useRef<Swiper | null>(null);
+  const swiperReference = useRef<Swiper | null>(null);
   const isOpen = useAuthModalStore((state) => state.isOpen);
   const setIsOpen = useAuthModalStore((state) => state.setIsOpen);
   const [isSignupOpen, setIsSignupOpen] = useState(false);
   const fetcher = useFetcher();
   const signupFetcher = useFetcher();
+  const otpFetcher = useFetcher();
 
   useEffect(() => {
-    if (
-      fetcher.state === 'idle' &&
-      fetcher.data?.success === false &&
-      fetcher.data?.errors?.general === 'Unexpected error'
-    ) {
-      toast.error('Şifrə və ya poçt yanlışdır');
+    if (otpFetcher.data?.success === true && otpFetcher.state === 'idle') {
+      toast.success('Account Confirmed');
+      setIsOpen(false);
+    }
+  }, [otpFetcher]);
+
+  useEffect(() => {
+    if (signupFetcher.data?.success === true && signupFetcher.state === 'idle') {
+      swiperReference.current?.slideNext();
+    }
+  }, [signupFetcher]);
+
+  useEffect(() => {
+    if (fetcher.data?.success === true && fetcher.state === 'idle') {
+      toast.success('Successful login');
+      setIsOpen(false);
     }
   }, [fetcher]);
+
+  useEffect(() => {
+    swiperReference.current?.update();
+  }, [fetcher, signupFetcher, otpFetcher, isSignupOpen]);
 
   const [isEyeOpen, setIsEyeOpen] = useState(false);
 
@@ -50,7 +67,7 @@ export function AuthModal() {
               <div className="rounded-full border border-orange-100 bg-orange-50 p-2">
                 <IdCard className="text-orange-500" />
               </div>
-              <span className="text-lg font-medium">User {isSignupOpen ? 'Signup' : 'Login'}</span>
+              <div className="text-lg font-medium">{isSignupOpen ? 'Signup' : 'Login'}</div>
             </div>
             <Button
               onPress={() => setIsOpen(false)}
@@ -59,17 +76,19 @@ export function AuthModal() {
               <X className="text-gray-700 group-hover:text-gray-800" />
             </Button>
           </div>
+          <div className="mt-6 mb-4 text-center text-2xl font-semibold">
+            {isSignupOpen ? 'Sign Up to Get Started' : 'Welcome back! Please sign in'}
+          </div>
           <SwiperComp
             spaceBetween={20}
             slidesPerView={1}
             autoHeight={true}
             allowTouchMove={false}
-            onSwiper={(swiper) => (swiperRef.current = swiper)}
+            onSwiper={(swiper) => (swiperReference.current = swiper)}
           >
             <SwiperSlide>
               {!isSignupOpen && (
                 <fetcher.Form
-                  className="pt-10 pb-3"
                   method="post"
                   action="/login"
                 >
@@ -146,20 +165,49 @@ export function AuthModal() {
                       Forgot password?
                     </Link>
                   </div>
+                  {fetcher.data?.success === false &&
+                    fetcher.state === 'idle' &&
+                    fetcher.data?.rawError?.data?.result?.errorMsg && (
+                      <div className="mb-4 rounded-md border border-red-100 bg-red-50 py-2 text-center text-red-600">
+                        {fetcher.data?.rawError?.data?.result?.errorMsg}
+                      </div>
+                    )}
+                  {fetcher.data?.success === false &&
+                    fetcher.state === 'idle' &&
+                    fetcher.data?.rawError?.data?.result?.error_msg && (
+                      <div className="mb-4 rounded-md border border-red-100 bg-red-50 py-2 text-center text-red-600">
+                        {fetcher.data?.rawError?.data?.result?.error_msg}
+                      </div>
+                    )}
                   <Button
                     type="submit"
-                    className="bg-primary w-full rounded-2xl py-4 text-white transition"
+                    isDisabled={fetcher.state !== 'idle'}
+                    className="bg-primary hover:bg-primary/90 disabled:bg-primary/80 mb-4 w-full rounded-2xl py-4 text-white transition"
                   >
                     Login
+                  </Button>
+                  <Button
+                    onPress={() => setIsSignupOpen((previous) => !previous)}
+                    className="group mx-auto mb-2 flex w-fit items-center gap-2 text-blue-800"
+                  >
+                    Don&apos;t have an account
+                    <ArrowRight
+                      size={16}
+                      className="transition group-hover:translate-x-1"
+                    />
                   </Button>
                 </fetcher.Form>
               )}
               {isSignupOpen && (
                 <signupFetcher.Form
-                  className="pt-10 pb-3"
                   method="post"
                   action="/signup"
                 >
+                  <input
+                    type="hidden"
+                    name="actionName"
+                    value="credentials"
+                  />
                   <div className="group mb-4 flex flex-col gap-1">
                     <Label
                       htmlFor="email"
@@ -220,29 +268,128 @@ export function AuthModal() {
                       )}
                     </div>
                   </div>
+                  <div className="group mb-5 flex flex-col gap-1">
+                    <Label
+                      htmlFor="repeat-password"
+                      className="group-has-focus:text-primary flex items-center gap-2 font-medium"
+                    >
+                      <KeyRound size={18} />
+                      <span>Confirm Password</span>
+                    </Label>
+                    <div className="flex flex-col gap-1">
+                      <div className="relative">
+                        <Input
+                          id="repeat-password"
+                          name="repeat-password"
+                          type={isEyeOpen ? 'text' : 'password'}
+                          className="border-outline-variant focus:outline-primary w-full rounded-xl border px-3 py-2"
+                          placeholder={isEyeOpen ? 'secretpassword' : '**********'}
+                        />
+                        <Button
+                          onPress={() => setIsEyeOpen((previous) => !previous)}
+                          className="absolute top-1/2 right-4 -translate-y-1/2"
+                        >
+                          {isEyeOpen && (
+                            <Eye
+                              size={18}
+                              className="text-on-surface-variant"
+                            />
+                          )}
+                          {!isEyeOpen && (
+                            <EyeClosed
+                              size={18}
+                              className="text-on-surface-variant"
+                            />
+                          )}
+                        </Button>
+                      </div>
+                      {signupFetcher.data?.errors?.repeatPassword && (
+                        <div className="text-red-600">{signupFetcher.data.errors.repeatPassword}</div>
+                      )}
+                    </div>
+                  </div>
+                  {signupFetcher.data?.success === false &&
+                    signupFetcher.state === 'idle' &&
+                    signupFetcher.data?.rawError?.data?.result?.errorMsg && (
+                      <div className="mb-4 rounded-md border border-red-100 bg-red-50 py-2 text-center text-red-600">
+                        {signupFetcher.data?.rawError?.data?.result?.errorMsg}
+                      </div>
+                    )}
+                  {signupFetcher.data?.success === false &&
+                    signupFetcher.state === 'idle' &&
+                    signupFetcher.data?.rawError?.data?.result?.error_msg && (
+                      <div className="mb-4 rounded-md border border-red-100 bg-red-50 py-2 text-center text-red-600">
+                        {signupFetcher.data?.rawError?.data?.result?.error_msg}
+                      </div>
+                    )}
                   <Button
                     type="submit"
-                    className="bg-primary w-full rounded-2xl py-4 text-white transition"
+                    isDisabled={signupFetcher.state !== 'idle'}
+                    className="bg-primary disabled:bg-primary/80 hover:bg-primary/95 mb-4 w-full rounded-2xl py-4 text-white transition"
                   >
                     Signup
+                  </Button>
+                  <Button
+                    onPress={() => setIsSignupOpen((previous) => !previous)}
+                    className="group mx-auto mb-2 flex w-fit items-center gap-2 text-blue-800"
+                  >
+                    Already have an account
+                    <ArrowRight
+                      size={16}
+                      className="transition group-hover:translate-x-1"
+                    />
                   </Button>
                 </signupFetcher.Form>
               )}
             </SwiperSlide>
-            <SwiperSlide></SwiperSlide>
+            <SwiperSlide>
+              <otpFetcher.Form
+                method="post"
+                action="/signup"
+              >
+                <input
+                  type="hidden"
+                  name="actionName"
+                  value="otpSubmit"
+                />
+                <div className="flex justify-center py-10">
+                  <InputOTP
+                    name="otp"
+                    disabled={otpFetcher.state !== 'idle'}
+                    onComplete={(otp) => {
+                      const formData = new FormData();
+                      formData.append('otp', otp);
+                      formData.append('actionName', 'otpSubmit');
+                      otpFetcher.submit(formData, {
+                        method: 'post',
+                        action: '/signup',
+                      });
+                    }}
+                    maxLength={6}
+                  >
+                    <InputOTPGroup>
+                      <InputOTPSlot index={0} />
+                      <InputOTPSlot index={1} />
+                      <InputOTPSlot index={2} />
+                    </InputOTPGroup>
+                    <InputOTPSeparator />
+                    <InputOTPGroup>
+                      <InputOTPSlot index={3} />
+                      <InputOTPSlot index={4} />
+                      <InputOTPSlot index={5} />
+                    </InputOTPGroup>
+                  </InputOTP>
+                </div>
+                <div className="h-12 text-center">
+                  {otpFetcher.data?.success === false && (
+                    <div className="text-red-500">
+                      Invalid OTP. Make sure you&apos;ve entered the latest 6-digit code received on your phone/email.
+                    </div>
+                  )}
+                </div>
+              </otpFetcher.Form>
+            </SwiperSlide>
           </SwiperComp>
-          <Button onPress={() => swiperRef.current?.slidePrev()}>prev</Button>
-          <Button onPress={() => swiperRef.current?.slideNext()}>next</Button>
-          <Button
-            onPress={() => setIsSignupOpen((previous) => !previous)}
-            className="group mx-auto mb-2 flex w-fit items-center gap-2 text-blue-800"
-          >
-            {isSignupOpen ? 'Already have an account' : "Don't have an account"}
-            <ArrowRight
-              size={16}
-              className="transition group-hover:translate-x-1"
-            />
-          </Button>
         </div>
       </div>
     </div>

@@ -1,5 +1,5 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Button } from 'react-aria-components';
 import { type Swiper as SwiperType } from 'swiper';
 import 'swiper/css';
@@ -9,7 +9,9 @@ import { ProductCard } from '@components/page/shared/ProductCard';
 
 import { cn } from '@libs/cn';
 
-export function ProductSlider() {
+import type { IProduct } from '@models/product';
+
+export function ProductSlider({ products }: { products: IProduct[] }) {
   const swiperReference = useRef<SwiperType | null>(null);
   const [beginAndEnd, setBeginAndEnd] = useState({
     isBeginning: true,
@@ -30,6 +32,15 @@ export function ProductSlider() {
       isEnd: swiper.isEnd,
     });
   }
+
+  useEffect(() => {
+    if (swiperReference.current) {
+      setBeginAndEnd({
+        isBeginning: swiperReference.current.isBeginning,
+        isEnd: swiperReference.current.isEnd,
+      });
+    }
+  }, [swiperReference]);
 
   return (
     <div className="relative z-0">
@@ -72,14 +83,13 @@ export function ProductSlider() {
           },
         }}
       >
-        {[1, 2, 3, 4, 5, 6, 7, 8].map((item, index) => {
-          const title = index % 2 === 1 ? 'Dynasty Cream' : 'Dynasty CreamCream';
+        {products.map((item) => {
           return (
             <SwiperSlide
-              key={index}
+              key={item.id}
               className="!h-auto"
             >
-              <ProductCard title={title} />
+              <ProductCard {...item} />
             </SwiperSlide>
           );
         })}

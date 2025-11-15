@@ -1,4 +1,6 @@
 import { Header } from '@layout/Header';
+import { NuqsAdapter } from 'nuqs/adapters/react-router/v7';
+import { useEffect } from 'react';
 import {
   Links,
   type LoaderFunctionArgs,
@@ -6,19 +8,24 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
-  data,
   isRouteErrorResponse,
+  useLoaderData,
 } from 'react-router';
 import { Toaster } from 'sonner';
 import 'swiper/css';
+import { userContext } from '~/context/user-context';
 import { userCookie } from '~/cookies.server';
 
 import { AuthModal } from '@components/modals/AuthModal';
 
-import { mainAPI } from '@api/config';
+import { useUserStore } from '@stores/userStore';
+
+import { authAPI } from '@api/auth-api';
+import { publicAPI } from '@api/public-api';
 
 import type { Route } from './+types/root';
 import './app.css';
+import { authMiddleware } from './middlewares/auth-middleware';
 
 export const links: Route.LinksFunction = () => [
   { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
@@ -33,30 +40,53 @@ export const links: Route.LinksFunction = () => [
   },
 ];
 
-export async function loader({ request }: LoaderFunctionArgs) {
+export const middleware: Route.MiddlewareFunction[] = [authMiddleware];
+
+export async function loader({ request, context }: LoaderFunctionArgs) {
   const cookieHeader = request.headers.get('Cookie');
   const cookie = (await userCookie.parse(cookieHeader)) || {};
 
+  const user = context.get(userContext);
+  let favourites;
+  let hierarchy;
+
   try {
-    if (!cookie.publicToken) {
-      const resp = await mainAPI.post('/security/token', null, {
-        headers: {
-          key: process.env.PLATFORM_KEY,
-        },
-      });
-      if (resp.data?.data?.token) {
-        cookie.publicToken = resp.data?.data?.token;
-        return data(null, {
-          headers: {
-            'Set-Cookie': await userCookie.serialize(cookie),
-          },
-        });
-      }
-    }
   } catch {}
+
+  if (user?.isAuth) {
+    const resp = await authAPI.get('/user/favorites', cookie);
+    const data = await resp.json();
+    favourites = data;
+    const hierarchyResp = await authAPI.get('/admin/hierarchy-v2', cookie);
+    const hierarchyData = await hierarchyResp.json();
+    hierarchy = hierarchyData;
+  } else {
+    const hierarchyResp = await publicAPI.get('/admin/hierarchy-v2', cookie);
+    const hierarchyData = await hierarchyResp.json();
+    hierarchy = hierarchyData;
+  }
+
+  console.log('cookie:', cookie);
+
+  return { user, favourites, hierarchy };
 }
 
 export function Layout({ children }: { children: React.ReactNode }) {
+  const loaderData = useLoaderData<typeof loader>();
+  const setUserData = useUserStore((state) => state.setUserData);
+
+  if (typeof document !== 'undefined') {
+    console.log(loaderData);
+  }
+
+  useEffect(() => {
+    if (loaderData && loaderData.user && loaderData.user.isAuth && loaderData.user.userData) {
+      setUserData(loaderData.user.userData);
+    } else {
+      setUserData(null);
+    }
+  }, [loaderData]);
+
   return (
     <html
       lang="en"
@@ -72,13 +102,15 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body>
-        <Header />
-        <AuthModal />
-        {children}
-        <Toaster
-          position="top-right"
-          richColors
-        />
+        <NuqsAdapter>
+          <Header />
+          <AuthModal />
+          {children}
+          <Toaster
+            position="top-right"
+            richColors
+          />
+        </NuqsAdapter>
         <ScrollRestoration />
         <Scripts />
       </body>
@@ -96,6 +128,7 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
   let stack: string | undefined;
 
   if (isRouteErrorResponse(error)) {
+    console.log(error);
     message = error.status === 404 ? '404' : 'Error';
     details = error.status === 404 ? 'The requested page could not be found.' : error.statusText || details;
   } else if (import.meta.env.DEV && error && error instanceof Error) {
