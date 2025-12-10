@@ -100,6 +100,8 @@ export default tseslint.config([
       'unicorn/prefer-global-this': 'off',
       'unicorn/prevent-abbreviations': 'off',
       'unicorn/filename-case': 'off',
+      'unicorn/no-negated-condition': 'off',
+      'unicorn/switch-case-braces': 'off',
     },
   },
   prettier,

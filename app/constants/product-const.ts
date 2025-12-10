@@ -27,3 +27,24 @@ export const colors = [
   { id: 16, code: '#ffff00', name: 'Yellow' },
   { id: 20, code: '#ffffff', name: 'White' },
 ];
+
+export const sizes = [
+  { id: 1, size: '35' },
+  { id: 2, size: '36' },
+  { id: 3, size: '37' },
+  { id: 4, size: '38' },
+  { id: 5, size: '39' },
+  { id: 6, size: '40' },
+  { id: 7, size: '41' },
+  { id: 8, size: '42' },
+  { id: 9, size: '43' },
+  { id: 10, size: '44' },
+  { id: 11, size: '45' },
+  { id: 12, size: '46' },
+  { id: 13, size: '47' },
+  { id: 1005, size: 'L' },
+  { id: 1006, size: 'M' },
+  { id: 1007, size: 'S' },
+  { id: 1008, size: 'XL' },
+  { id: 1009, size: 'XS' },
+];

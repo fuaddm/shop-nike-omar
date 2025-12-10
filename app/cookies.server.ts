@@ -9,3 +9,7 @@ export interface IUserCookie {
 export const userCookie = createCookie('user', {
   maxAge: 60 * 60 * 3,
 });
+
+export const themeCookie = createCookie('theme', {
+  maxAge: 2_592_000,
+});

@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import { userContext } from '~/context/user-context';
 import { userCookie } from '~/cookies.server';
 
@@ -19,18 +20,23 @@ async function checkTokens(cookie, context, next) {
           token: cookie.privateToken,
         },
       });
-      const respData = await resp.json();
+      if (resp.statusText !== 'OK') {
+        await tryToRefresh(cookie, context, next);
+      } else {
+        const respData = await resp.json();
 
-      context.set(userContext, { isAuth: true, userData: respData });
+        context.set(userContext, { isAuth: true, userData: respData });
 
-      return await next();
+        return await next();
+      }
     } catch {
       await tryToRefresh(cookie, context, next);
     }
   } else {
     if (cookie.publicToken) {
       context.set(userContext, { isAuth: false });
-      return await next();
+      const response = await next();
+      return response;
     } else {
       try {
         const resp = await publicAPI.post('/security/token', cookie, {
@@ -38,15 +44,24 @@ async function checkTokens(cookie, context, next) {
             key: process.env.PLATFORM_KEY ?? '',
           },
         });
-        const respData = await resp.json();
-        if (respData?.data?.token) {
-          cookie.publicToken = respData?.data?.token;
-
+        if (resp.statusText !== 'OK') {
           context.set(userContext, { isAuth: false });
+          console.error('/security/token -> API not working');
 
-          const response = await next();
-          response.headers.set('Set-Cookie', await userCookie.serialize(cookie));
-          return response;
+          throw new Response('Public Token not working', {
+            status: 401,
+          });
+        } else {
+          const respData = await resp.json();
+          if (respData?.data?.token) {
+            cookie.publicToken = respData?.data?.token;
+
+            context.set(userContext, { isAuth: false });
+
+            const response = await next();
+            response.headers.set('Set-Cookie', await userCookie.serialize(cookie));
+            return response;
+          }
         }
       } catch {
         context.set(userContext, { isAuth: false });

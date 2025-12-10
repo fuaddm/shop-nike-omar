@@ -21,13 +21,13 @@ export function ProductDisclosure({ additionalInformations }: IProductDisclosure
                 className="flex w-full items-center justify-between px-3 py-4 text-lg italic"
               >
                 {item.title}
-                <div className="relative z-0 h-5 w-5 transition group-data-[expanded]:rotate-45">
+                <div className="relative z-0 h-5 w-5 transition ease-out group-data-[expanded]:rotate-45">
                   <div className="bg-outline absolute top-1/2 left-0 h-0.5 w-full -translate-y-1/2"></div>
                   <div className="bg-outline absolute top-1/2 left-0 h-0.5 w-full -translate-y-1/2 rotate-90"></div>
                 </div>
               </Button>
             </Heading>
-            <DisclosurePanel className="text-neutral-600 group-data-[expanded]:px-3 group-data-[expanded]:pb-4">
+            <DisclosurePanel className="text-on-surface-variant group-data-[expanded]:px-3 group-data-[expanded]:pb-4">
               <p>{item.text}</p>
             </DisclosurePanel>
           </Disclosure>

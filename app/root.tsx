@@ -1,4 +1,6 @@
+import { Footer } from '@layout/Footer';
 import { Header } from '@layout/Header';
+import { PageLoading } from '@layout/PageLoading';
 import { NuqsAdapter } from 'nuqs/adapters/react-router/v7';
 import { useEffect } from 'react';
 import {
@@ -9,12 +11,13 @@ import {
   Scripts,
   ScrollRestoration,
   isRouteErrorResponse,
+  useFetcher,
   useLoaderData,
 } from 'react-router';
 import { Toaster } from 'sonner';
 import 'swiper/css';
 import { userContext } from '~/context/user-context';
-import { userCookie } from '~/cookies.server';
+import { themeCookie, userCookie } from '~/cookies.server';
 
 import { AuthModal } from '@components/modals/AuthModal';
 
@@ -38,6 +41,15 @@ export const links: Route.LinksFunction = () => [
     rel: 'stylesheet',
     href: 'https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap',
   },
+  {
+    rel: 'stylesheet',
+    href: 'https://fonts.googleapis.com/css2?family=Fugaz+One&display=swap',
+  },
+  {
+    rel: 'icon',
+    type: 'image/svg+xml',
+    href: '/logo.svg',
+  },
 ];
 
 export const middleware: Route.MiddlewareFunction[] = [authMiddleware];
@@ -45,18 +57,21 @@ export const middleware: Route.MiddlewareFunction[] = [authMiddleware];
 export async function loader({ request, context }: LoaderFunctionArgs) {
   const cookieHeader = request.headers.get('Cookie');
   const cookie = (await userCookie.parse(cookieHeader)) || {};
+  const cookieOfTheme = (await themeCookie.parse(cookieHeader)) || {};
 
   const user = context.get(userContext);
-  let favourites;
+  let favourites, cart;
   let hierarchy;
 
-  try {
-  } catch {}
+  const theme = cookieOfTheme.theme ?? '';
 
   if (user?.isAuth) {
     const resp = await authAPI.get('/user/favorites', cookie);
     const data = await resp.json();
     favourites = data;
+    const cartResp = await authAPI.get('/user/cart', cookie);
+    const cartData = await cartResp.json();
+    cart = cartData;
     const hierarchyResp = await authAPI.get('/admin/hierarchy-v2', cookie);
     const hierarchyData = await hierarchyResp.json();
     hierarchy = hierarchyData;
@@ -68,16 +83,28 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
 
   console.log('cookie:', cookie);
 
-  return { user, favourites, hierarchy };
+  return { user, favourites, hierarchy, cart, theme };
+}
+
+export function meta() {
+  return [
+    { title: 'Nike' },
+    {
+      name: 'description',
+      content: 'This app is the best',
+    },
+  ];
 }
 
 export function Layout({ children }: { children: React.ReactNode }) {
   const loaderData = useLoaderData<typeof loader>();
   const setUserData = useUserStore((state) => state.setUserData);
+  const fetcher = useFetcher({ key: 'theme' });
+  const optimisticTheme = fetcher.formData ? fetcher.formData.get('theme') : loaderData.theme;
 
-  if (typeof document !== 'undefined') {
-    console.log(loaderData);
-  }
+  // if (typeof document !== 'undefined') {
+  //   console.log(loaderData);
+  // }
 
   useEffect(() => {
     if (loaderData && loaderData.user && loaderData.user.isAuth && loaderData.user.userData) {
@@ -90,7 +117,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
   return (
     <html
       lang="en"
-      className=""
+      className={optimisticTheme}
     >
       <head>
         <meta charSet="utf-8" />
@@ -101,8 +128,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Meta />
         <Links />
       </head>
-      <body>
+      <body className="min-h-screen">
         <NuqsAdapter>
+          <PageLoading />
           <Header />
           <AuthModal />
           {children}
@@ -110,6 +138,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
             position="top-right"
             richColors
           />
+          <Footer />
         </NuqsAdapter>
         <ScrollRestoration />
         <Scripts />
