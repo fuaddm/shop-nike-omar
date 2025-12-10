@@ -4,7 +4,7 @@ import { Button } from 'react-aria-components';
 import { useLoaderData } from 'react-router';
 import { Popover, PopoverContent, PopoverTrigger } from '~/components/ui/popover';
 import { cn } from '~/lib/utils';
-import type { loader } from '~/routes/addresses';
+import type { loader } from '~/routes/settings/addresses';
 
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@ui/Command';
 

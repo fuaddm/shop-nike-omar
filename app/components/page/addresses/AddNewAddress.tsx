@@ -37,7 +37,7 @@ export function AddNewAddress() {
       onOpenChange={setOpen}
     >
       <DialogTrigger>
-        <div className="grid h-24 place-items-center rounded-md border border-dashed border-gray-500 bg-gray-50 text-center font-medium transition hover:bg-gray-100">
+        <div className="bg-surface-container hover:bg-surface-container-high grid h-full min-h-[200px] place-items-center rounded-md border border-dashed border-gray-500 text-center font-medium transition">
           Add new address
         </div>
       </DialogTrigger>
@@ -157,7 +157,7 @@ export function AddNewAddress() {
             <DialogClose asChild>
               <Button
                 type="button"
-                className="rounded-xl px-6 py-2 transition hover:bg-gray-200"
+                className="hover:bg-surface-container rounded-xl px-6 py-2 transition"
               >
                 Cancel
               </Button>

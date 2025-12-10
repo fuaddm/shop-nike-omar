@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import { type IUserCookie } from '~/cookies.server';
 
 export async function publicAPI() {

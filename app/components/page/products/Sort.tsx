@@ -3,12 +3,14 @@ import { useQueryState } from 'nuqs';
 import { Button, ListBox, ListBoxItem, Popover, Select, SelectValue } from 'react-aria-components';
 
 export function Sort() {
-  const [value, setValue] = useQueryState('SortId');
+  const [value, setValue] = useQueryState('SortId', {
+    defaultValue: '1',
+  });
 
   return (
     <Select
       aria-label="sort"
-      className="group mb-4"
+      className="group"
       name="sort"
       defaultSelectedKey={value ?? '1'}
       onSelectionChange={(key) => setValue(key)}

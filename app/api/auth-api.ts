@@ -1,7 +1,8 @@
+import 'dotenv/config';
 import { type IUserCookie } from '~/cookies.server';
 
 export async function authAPI() {
-  return null;
+  return { get, post, patch, put };
 }
 
 authAPI.config = {
@@ -135,6 +136,38 @@ async function patch(input: string, cookie: IUserCookie, config?: RequestInit): 
   });
 }
 
+async function put(input: string, cookie: IUserCookie, config?: RequestInit): Promise<Response> {
+  if (cookie && cookie.privateToken) {
+    const privateToken = cookie.privateToken;
+
+    const baseConfig = {
+      method: 'PUT',
+      headers: {
+        token: privateToken,
+        'Content-Type': 'application/json',
+      },
+    };
+
+    const mergedConfig = {
+      ...baseConfig,
+      ...config,
+
+      headers: {
+        ...baseConfig.headers,
+        ...config?.headers,
+      },
+    };
+
+    return await authAPI.interceptor.response(authAPI.config.baseURL + input, cookie, mergedConfig);
+  }
+
+  throw new Response(null, {
+    status: 401,
+    statusText: 'No privateToken provided',
+  });
+}
+
 authAPI.get = get;
 authAPI.post = post;
 authAPI.patch = patch;
+authAPI.put = put;

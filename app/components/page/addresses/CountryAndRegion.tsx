@@ -5,16 +5,16 @@ import { useFetcher } from 'react-router';
 import { CountryCombobox } from '@components/page/addresses/CountryCombobox';
 import { StateCombobox } from '@components/page/addresses/StateCombobox';
 
-export function CountryAndRegion() {
+export function CountryAndRegion({ state = '', propCountry = '' }: { state?: string; propCountry?: string }) {
   const fetcher = useFetcher({ key: 'address' });
-  const [country, setCountry] = useState('');
+  const [country, setCountry] = useState(propCountry);
 
   return (
     <div className="mb-4 grid grid-cols-2 gap-2">
       <div className="grid gap-1">
         <StateCombobox
+          defaultValue={state}
           country={country}
-          setCountry={setCountry}
         />
         {fetcher.data?.errors && fetcher.data?.errors.state && (
           <div className="text-red-600">{fetcher.data?.errors.state}</div>

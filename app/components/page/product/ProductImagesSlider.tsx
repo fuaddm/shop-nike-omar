@@ -21,7 +21,7 @@ export function ProductImagesSlider({ images }: IProductImagesSliderProperties) 
 
   return (
     <div className="grid aspect-square h-fit w-full grid-rows-[1fr_max-content] gap-2 md:gap-3">
-      <div className="w-full overflow-hidden rounded-2xl bg-neutral-100">
+      <div className="bg-surface-container w-full overflow-hidden rounded-2xl">
         <Swiper
           spaceBetween={10}
           onSwiper={(swiper) => (swiperReference.current = swiper)}
@@ -30,7 +30,7 @@ export function ProductImagesSlider({ images }: IProductImagesSliderProperties) 
           {images.map((image) => (
             <SwiperSlide
               key={image.id}
-              className="h-full w-full rounded-2xl bg-neutral-100"
+              className="bg-surface-container h-full w-full rounded-2xl"
             >
               <img
                 className="h-full w-full object-contain"
@@ -49,7 +49,7 @@ export function ProductImagesSlider({ images }: IProductImagesSliderProperties) 
           <Button
             key={image.id}
             onPress={() => swipeTo(index)}
-            className="focus:outline-outline hover:outline-outline-variant aspect-square w-full overflow-hidden rounded-2xl bg-neutral-100 outline-2 outline-transparent transition"
+            className="focus:outline-outline hover:outline-outline-variant bg-surface-container aspect-square w-full overflow-hidden rounded-2xl outline-2 outline-transparent transition"
           >
             <img
               className="h-full w-full object-contain"

@@ -36,7 +36,7 @@ export function AddNewCard() {
       onOpenChange={setOpen}
     >
       <DialogTrigger>
-        <div className="grid aspect-[1.586/1] place-items-center rounded-md border border-dashed border-gray-500 bg-gray-50 text-center font-medium transition hover:bg-gray-100">
+        <div className="bg-surface-container hover:bg-surface-container-high grid aspect-[1.586/1] place-items-center rounded-md border border-dashed border-gray-500 text-center font-medium transition">
           Add new card
         </div>
       </DialogTrigger>
@@ -102,7 +102,7 @@ export function AddNewCard() {
             <DialogClose asChild>
               <Button
                 type="button"
-                className="rounded-xl px-6 transition hover:bg-gray-200"
+                className="hover:bg-surface-container rounded-xl px-6 transition"
               >
                 Cancel
               </Button>

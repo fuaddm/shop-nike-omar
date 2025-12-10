@@ -15,13 +15,26 @@ import { colors } from '~/constants/product-const';
 import { cn } from '@libs/cn';
 
 export function Filter() {
-  const [priceRangeId, setPriceRangeId] = useQueryState('PriceRangeId');
-  const [genderId, setGenderId] = useQueryState('ClothingGenderId', parseAsNativeArrayOf(parseAsString));
-  const [colorId, setColorId] = useQueryState('ColorId', parseAsNativeArrayOf(parseAsString));
   const [isOpen, setIsOpen] = useQueryState('VisibilityOfFilter', parseAsBoolean.withDefault(true));
 
+  const [priceRangeId, setPriceRangeId] = useQueryState('PriceRangeId');
+  const [clothingGenderId, setClothingGenderId] = useQueryState(
+    'ClothingGenderId',
+    parseAsNativeArrayOf(parseAsString)
+  );
+  const [colorId, setColorId] = useQueryState('ColorId', parseAsNativeArrayOf(parseAsString));
+  const [pageNumber, setPageNumber] = useQueryState('PageNumber', {
+    defaultValue: '1',
+    scroll: true,
+  });
+
+  const handleFilterChange = (setter, newValue) => {
+    setter(newValue);
+    setPageNumber('1');
+  };
+
   function setGenderIdWithValue(value: string) {
-    setGenderId((previous) => {
+    handleFilterChange(setClothingGenderId, (previous) => {
       if (previous.includes(value)) {
         return previous.filter((value_: string) => value_ !== value);
       }
@@ -29,7 +42,7 @@ export function Filter() {
     });
   }
   function setColorIdWithValue(value: string) {
-    setColorId((previous) => {
+    handleFilterChange(setColorId, (previous) => {
       if (previous.includes(value)) {
         return previous.filter((value_: string) => value_ !== value);
       }
@@ -40,14 +53,14 @@ export function Filter() {
   return (
     <div
       className={cn({
-        'w-[300px] min-w-[300px] transition-all duration-300': true,
-        'w-0 min-w-0': !isOpen,
+        'me-6 w-[300px] min-w-[300px] transition-all duration-300': true,
+        'me-0 w-0 min-w-0': !isOpen,
       })}
     >
       <div
         className={cn({
           'bg-surface-container-low h-fit w-[300px] min-w-[300px] rounded-xl px-4 pt-4 pb-10 transition duration-300': true,
-          '-translate-x-[150%]': !isOpen,
+          '-translate-x-[200%]': !isOpen,
         })}
       >
         <div className="mb-4 ps-1 text-xl font-bold">Filter</div>
@@ -80,25 +93,41 @@ export function Filter() {
                   value="1"
                   onClick={() => {
                     if ('1' === priceRangeId) {
-                      setPriceRangeId(null);
+                      handleFilterChange(setPriceRangeId, null);
                     } else {
-                      setPriceRangeId('1');
+                      handleFilterChange(setPriceRangeId, '1');
                     }
                   }}
                 >
                   <div className="border-outline group-data-selected:bg-surface-tint group-data-selected:border-surface-tint h-4.5 w-4.5 rounded border p-0.5">
                     <Check className="invisible h-full w-full stroke-white group-data-selected:visible" />
                   </div>
-                  $0 - $50
+                  $0 - $25
                 </Radio>
                 <Radio
                   className="bg-surface-bright text-on-surface-variant group hover:bg-surface-dim flex items-center gap-2 rounded-md px-2 py-2 text-sm transition ease-out"
                   value="2"
                   onClick={() => {
                     if ('2' === priceRangeId) {
-                      setPriceRangeId(null);
+                      handleFilterChange(setPriceRangeId, null);
                     } else {
-                      setPriceRangeId('2');
+                      handleFilterChange(setPriceRangeId, '2');
+                    }
+                  }}
+                >
+                  <div className="border-outline group-data-selected:bg-surface-tint group-data-selected:border-surface-tint h-4.5 w-4.5 rounded border p-0.5">
+                    <Check className="invisible h-full w-full stroke-white group-data-selected:visible" />
+                  </div>
+                  $25 - $50
+                </Radio>
+                <Radio
+                  className="bg-surface-bright text-on-surface-variant group hover:bg-surface-dim flex items-center gap-2 rounded-md px-2 py-2 text-sm transition ease-out"
+                  value="3"
+                  onClick={() => {
+                    if ('3' === priceRangeId) {
+                      handleFilterChange(setPriceRangeId, null);
+                    } else {
+                      handleFilterChange(setPriceRangeId, '3');
                     }
                   }}
                 >
@@ -109,25 +138,41 @@ export function Filter() {
                 </Radio>
                 <Radio
                   className="bg-surface-bright text-on-surface-variant group hover:bg-surface-dim flex items-center gap-2 rounded-md px-2 py-2 text-sm transition ease-out"
-                  value="3"
+                  value="4"
                   onClick={() => {
-                    if ('3' === priceRangeId) {
-                      setPriceRangeId(null);
+                    if ('4' === priceRangeId) {
+                      handleFilterChange(setPriceRangeId, null);
                     } else {
-                      setPriceRangeId('3');
+                      handleFilterChange(setPriceRangeId, '4');
                     }
                   }}
                 >
                   <div className="border-outline group-data-selected:bg-surface-tint group-data-selected:border-surface-tint h-4.5 w-4.5 rounded border p-0.5">
                     <Check className="invisible h-full w-full stroke-white group-data-selected:visible" />
                   </div>
-                  $100+
+                  $100 - $150
+                </Radio>
+                <Radio
+                  className="bg-surface-bright text-on-surface-variant group hover:bg-surface-dim flex items-center gap-2 rounded-md px-2 py-2 text-sm transition ease-out"
+                  value="5"
+                  onClick={() => {
+                    if ('5' === priceRangeId) {
+                      handleFilterChange(setPriceRangeId, null);
+                    } else {
+                      handleFilterChange(setPriceRangeId, '5');
+                    }
+                  }}
+                >
+                  <div className="border-outline group-data-selected:bg-surface-tint group-data-selected:border-surface-tint h-4.5 w-4.5 rounded border p-0.5">
+                    <Check className="invisible h-full w-full stroke-white group-data-selected:visible" />
+                  </div>
+                  Over 150
                 </Radio>
               </RadioGroup>
             </DisclosurePanel>
           </Disclosure>
           <Disclosure
-            defaultExpanded={genderId.length > 0}
+            defaultExpanded={clothingGenderId.length > 0}
             className="group"
           >
             <Heading>
@@ -135,7 +180,7 @@ export function Filter() {
                 slot="trigger"
                 className="bg-surface-bright text-on-surface-variant group-data-expanded:text-on-surface hover:bg-surface-dim flex w-full items-center justify-between rounded-lg px-3 py-2 transition-all ease-out group-data-expanded:rounded-b-none"
               >
-                Gender {genderId.length > 0 && `(${genderId.length})`}
+                Gender {clothingGenderId.length > 0 && `(${clothingGenderId.length})`}
                 <ChevronDown
                   className="transition group-data-expanded:-rotate-180"
                   size={18}
@@ -147,7 +192,7 @@ export function Filter() {
                 className="my-2 flex flex-col gap-1.5"
                 aria-label="gender"
                 name="gender"
-                defaultValue={genderId}
+                value={clothingGenderId}
               >
                 <Checkbox
                   className="bg-surface-bright group text-on-surface-variant hover:bg-surface-dim flex items-center gap-2 rounded-md px-2 py-2 text-sm transition ease-out"
@@ -216,16 +261,16 @@ export function Filter() {
                     <Checkbox
                       key={color.id}
                       className="group/color flex cursor-pointer flex-col items-center gap-1"
-                      value={String(color.id)}
+                      value={String(color.code)}
                       onClick={() => {
-                        setColorIdWithValue(String(color.id));
+                        setColorIdWithValue(String(color.code));
                       }}
                     >
                       <div
                         style={{ backgroundColor: color.code }}
                         className="h-8 w-8 rounded-full p-1.5 transition ease-out group-hover/color:opacity-50"
                       >
-                        {colorId.includes(String(color.id)) && <Check className="h-full w-full stroke-white" />}
+                        {colorId.includes(String(color.code)) && <Check className="h-full w-full stroke-white" />}
                       </div>
                       <div className="text-center text-xs transition ease-out group-hover/color:opacity-50">
                         {color.name}

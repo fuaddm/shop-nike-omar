@@ -12,17 +12,21 @@ import {
   DropdownMenuTrigger,
 } from '@ui/dropdown-menu';
 
+import { EditAddress } from '@components/page/addresses/EditAddress';
+
 interface IAddressCardProperties {
   addressId: string;
   city: string;
-  countryId: string;
   firstName: string;
   lastName: string;
-  locationId: string;
   phoneNumber: string;
   streetAddress: string;
   streetAddressSecond: string;
   zipCode: string;
+  countryName: string;
+  locationName: string;
+  locationId: string;
+  countryId: string;
 }
 
 export function AddressCard(properties: IAddressCardProperties) {
@@ -31,12 +35,12 @@ export function AddressCard(properties: IAddressCardProperties) {
     firstName,
     lastName,
     city,
-    countryId,
-    locationId,
     phoneNumber,
     streetAddress,
     streetAddressSecond,
     zipCode,
+    countryName,
+    locationName,
   } = properties;
 
   const fetcher = useFetcher();
@@ -57,22 +61,22 @@ export function AddressCard(properties: IAddressCardProperties) {
   }
 
   return (
-    <div className="bg-surface-container flex justify-between rounded-xl px-6 py-4">
-      <div className="flex flex-col">
+    <div className="bg-surface-container flex justify-between rounded-xl p-6">
+      <div className="flex flex-col gap-2">
         <div className="font-medium">
           {firstName} {lastName}
         </div>
+        <div className="text-on-surface-variant">{countryName}</div>
+        <div className="text-on-surface-variant">{locationName}</div>
         <div className="text-on-surface-variant">{streetAddress}</div>
         {streetAddressSecond && <div className="text-on-surface-variant">{streetAddressSecond}</div>}
         <div className="text-on-surface-variant">{city}</div>
         <div className="text-on-surface-variant">{phoneNumber}</div>
         <div className="text-on-surface-variant">{zipCode}</div>
-        <div className="text-on-surface-variant">{countryId}</div>
-        <div className="text-on-surface-variant">{locationId}</div>
       </div>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button className="aspect-square h-fit rounded-full py-1 transition hover:bg-gray-300 focus:outline-none">
+          <Button className="hover:bg-surface-container-high aspect-square h-fit rounded-full py-1 transition focus:outline-none">
             <EllipsisVertical />
           </Button>
         </DropdownMenuTrigger>
@@ -82,8 +86,11 @@ export function AddressCard(properties: IAddressCardProperties) {
         >
           <DropdownMenuGroup>
             <DropdownMenuItem asChild>
+              <EditAddress data={properties} />
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
               <Button
-                className="w-full"
+                className="hover:bg-surface-container w-full text-red-500 hover:text-red-500"
                 isDisabled={fetcher.state !== 'idle'}
                 onPress={() => deleteAddress()}
               >
@@ -93,6 +100,52 @@ export function AddressCard(properties: IAddressCardProperties) {
           </DropdownMenuGroup>
         </DropdownMenuContent>
       </DropdownMenu>
+    </div>
+  );
+}
+
+export function SimpleAddressCard(properties: IAddressCardProperties) {
+  const {
+    firstName,
+    lastName,
+    city,
+    phoneNumber,
+    streetAddress,
+    streetAddressSecond,
+    zipCode,
+    countryName,
+    locationName,
+  } = properties;
+
+  return (
+    <div className="bg-surface-container hover:bg-surface-container-high flex justify-between rounded-xl p-6 text-start transition ease-out">
+      <div className="flex flex-col gap-2">
+        <div className="font-medium">
+          {firstName} {lastName}
+        </div>
+        <div className="text-on-surface-variant">
+          {countryName}, {locationName}, {city}
+        </div>
+        <div className="text-on-surface-variant">{streetAddress}</div>
+        {streetAddressSecond && <div className="text-on-surface-variant">{streetAddressSecond}</div>}
+        <div className="text-on-surface-variant">{phoneNumber}</div>
+        <div className="text-on-surface-variant">{zipCode}</div>
+      </div>
+    </div>
+  );
+}
+
+export function SkeletonAddressCard() {
+  return (
+    <div className="bg-surface-container hover:bg-surface-container-high flex justify-between rounded-xl p-6 text-start text-transparent transition ease-out">
+      <div className="flex flex-col gap-2">
+        <div className="bg-on-surface w-fit animate-pulse rounded-md font-medium">firstName lastName</div>
+        <div className="bg-on-surface-variant w-fit animate-pulse rounded-md">countryName, locationName, city</div>
+        <div className="bg-on-surface-variant w-fit animate-pulse rounded-md">streetAddress streetAddress</div>
+        <div className="bg-on-surface-variant w-fit animate-pulse rounded-md">streetAddress</div>
+        <div className="bg-on-surface-variant w-fit animate-pulse rounded-md">phoneNumber</div>
+        <div className="bg-on-surface-variant w-fit animate-pulse rounded-md">zipCode</div>
+      </div>
     </div>
   );
 }

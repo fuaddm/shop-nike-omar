@@ -19,7 +19,7 @@ export function Menu({ ref, mouseOut, selectedMainCategoryId, ...properties }: I
     <div
       ref={ref}
       className={cn({
-        'invisible absolute top-full left-0 z-10 h-[calc(100vh-100%)] w-full overflow-hidden': true,
+        'invisible absolute top-full left-0 z-20 h-[calc(100vh-100%)] w-full overflow-hidden': true,
         visible: isOpen,
       })}
       {...properties}
@@ -27,7 +27,7 @@ export function Menu({ ref, mouseOut, selectedMainCategoryId, ...properties }: I
       <div
         onMouseEnter={() => setIsOpen(false)}
         className={cn({
-          'invisible absolute top-0 left-0 z-10 h-full w-full bg-black/20 opacity-0 transition dark:bg-white/20': true,
+          'invisible absolute top-0 left-0 z-10 h-full w-full bg-black/60 opacity-0 transition dark:bg-white/20': true,
           'visible opacity-100': isOpen,
         })}
       ></div>
@@ -57,7 +57,7 @@ function MenuMain({ mouseOut, selectedMainCategoryId }: Omit<IMenuProperties, 'r
           loaderData.hierarchy.data.hierarchies.find((mainCategory) => mainCategory.id === selectedMainCategoryId) &&
           loaderData.hierarchy.data.hierarchies
             .find((mainCategory) => mainCategory.id === selectedMainCategoryId)
-            .categories.map((category) => {
+            .categories?.map((category) => {
               return (
                 <div
                   key={category.id}
@@ -76,7 +76,7 @@ function MenuMain({ mouseOut, selectedMainCategoryId }: Omit<IMenuProperties, 'r
                         key={subCategory.id}
                         onClick={() => setIsOpen(false)}
                         to={`/products?MainCategoryId=${selectedMainCategoryId}&CategoryId=${category.id}&SubCategoryId=${subCategory.id}`}
-                        className="text-on-surface-variant text-sm"
+                        className="text-on-surface-variant hover:text-on-surface text-sm"
                       >
                         {subCategory.name}
                       </Link>

@@ -45,6 +45,7 @@ function generatePaginationArray(totalItems: number, activePage: number, neighbo
 export function PaginationProducts({ total }: { total: number }) {
   const [pageNumber, setPageNumber] = useQueryState('PageNumber', {
     defaultValue: '1',
+    scroll: true,
   });
 
   return (

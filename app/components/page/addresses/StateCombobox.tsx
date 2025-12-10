@@ -4,21 +4,16 @@ import { Button, Label } from 'react-aria-components';
 import { useLoaderData } from 'react-router';
 import { Popover, PopoverContent, PopoverTrigger } from '~/components/ui/popover';
 import { cn } from '~/lib/utils';
-import type { loader } from '~/routes/addresses';
+import type { loader } from '~/routes/settings/addresses';
 
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@ui/Command';
 
-export function StateCombobox({
-  country,
-  setCountry,
-}: {
-  country: string;
-  setCountry: (previousState: string) => string;
-}) {
+export function StateCombobox({ country, defaultValue = '' }: { country: string; defaultValue?: string }) {
   const loaderData = useLoaderData<typeof loader>();
   const countriesAndRegions = loaderData.countriesAndRegions;
   const [open, setOpen] = useState(false);
-  const [value, setValue] = useState('');
+  const [value, setValue] = useState(defaultValue);
+  const [isFirst, setIsFirstRender] = useState(true);
 
   const regions = countriesAndRegions.find((item) => item.country.id === country)?.regions ?? [];
   let type;
@@ -27,7 +22,10 @@ export function StateCombobox({
   }
 
   useEffect(() => {
-    setValue('');
+    if (!isFirst) {
+      setValue('');
+    }
+    setIsFirstRender(false);
   }, [country]);
 
   return (

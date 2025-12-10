@@ -40,6 +40,13 @@ export function AuthModal() {
     if (fetcher.data?.success === true && fetcher.state === 'idle') {
       toast.success('Successful login');
       setIsOpen(false);
+    } else if (
+      fetcher.data?.success === false &&
+      fetcher.data?.errors?.general === 'Unexpected error' &&
+      fetcher.state === 'idle'
+    ) {
+      // toast.error(fetcher.data?.error);
+      console.dir(fetcher.data?.rawError);
     }
   }, [fetcher]);
 
@@ -61,19 +68,19 @@ export function AuthModal() {
         className="fixed top-0 left-0 z-0 h-full w-full bg-black/50"
       ></div>
       <div className="pointer-events-none relative z-10 container mx-auto flex w-full justify-center">
-        <div className="pointer-events-auto w-full max-w-[520px] rounded-3xl border border-gray-200 bg-white px-5 py-4 shadow-xs">
+        <div className="border-outline-variant bg-surface-container pointer-events-auto w-full max-w-[520px] rounded-xl border px-5 py-4 shadow-xs">
           <div className="flex items-center justify-between gap-10">
             <div className="flex items-center gap-2">
-              <div className="rounded-full border border-orange-100 bg-orange-50 p-2">
-                <IdCard className="text-orange-500" />
+              <div className="border-outline-variant bg-surface-container-high rounded-full border p-2">
+                <IdCard className="text-on-surface" />
               </div>
               <div className="text-lg font-medium">{isSignupOpen ? 'Signup' : 'Login'}</div>
             </div>
             <Button
               onPress={() => setIsOpen(false)}
-              className="group hover:bg-surface rounded bg-transparent p-1 transition"
+              className="group hover:bg-surface-container-lowest rounded bg-transparent p-1 transition"
             >
-              <X className="text-gray-700 group-hover:text-gray-800" />
+              <X className="text-on-surface-variant group-hover:text-on-surface" />
             </Button>
           </div>
           <div className="mt-6 mb-4 text-center text-2xl font-semibold">
@@ -91,6 +98,7 @@ export function AuthModal() {
                 <fetcher.Form
                   method="post"
                   action="/login"
+                  className="px-1"
                 >
                   <div className="group mb-4 flex flex-col gap-1">
                     <Label
@@ -104,7 +112,7 @@ export function AuthModal() {
                       <Input
                         id="email"
                         name="email"
-                        className="border-outline-variant focus:outline-primary rounded-xl border px-3 py-2"
+                        className="border-outline-variant focus:outline-primary bg-surface-container-high rounded-xl border px-3 py-2"
                         placeholder="example@gmail.com"
                       />
                       {fetcher.data?.errors?.email && <div className="text-red-600">{fetcher.data.errors.email}</div>}
@@ -124,7 +132,7 @@ export function AuthModal() {
                           id="password"
                           name="password"
                           type={isEyeOpen ? 'text' : 'password'}
-                          className="border-outline-variant focus:outline-primary w-full rounded-xl border px-3 py-2"
+                          className="border-outline-variant bg-surface-container-high focus:outline-primary w-full rounded-xl border px-3 py-2"
                           placeholder={isEyeOpen ? 'secretpassword' : '**********'}
                         />
                         <Button
@@ -151,7 +159,7 @@ export function AuthModal() {
                     </div>
                   </div>
                   <div className="mb-5 flex justify-between">
-                    <Label className="flex items-center gap-2">
+                    <Label className="flex cursor-pointer items-center gap-2">
                       <input
                         name="rememberMe"
                         type="checkbox"
@@ -160,7 +168,7 @@ export function AuthModal() {
                     </Label>
                     <Link
                       to="#"
-                      className="text-on-surface-variant hover:text-blue-600 hover:underline"
+                      className="text-on-surface hover:text-blue-400 hover:underline"
                     >
                       Forgot password?
                     </Link>
@@ -182,13 +190,13 @@ export function AuthModal() {
                   <Button
                     type="submit"
                     isDisabled={fetcher.state !== 'idle'}
-                    className="bg-primary hover:bg-primary/90 disabled:bg-primary/80 mb-4 w-full rounded-2xl py-4 text-white transition"
+                    className="bg-primary disabled:bg-primary/80 text-on-primary mb-4 w-full cursor-pointer rounded-2xl py-4 font-semibold transition disabled:cursor-default"
                   >
                     Login
                   </Button>
                   <Button
                     onPress={() => setIsSignupOpen((previous) => !previous)}
-                    className="group mx-auto mb-2 flex w-fit items-center gap-2 text-blue-800"
+                    className="group text-on-surface mx-auto mb-2 flex w-fit items-center gap-2"
                   >
                     Don&apos;t have an account
                     <ArrowRight
@@ -202,6 +210,7 @@ export function AuthModal() {
                 <signupFetcher.Form
                   method="post"
                   action="/signup"
+                  className="px-1"
                 >
                   <input
                     type="hidden"
@@ -220,7 +229,7 @@ export function AuthModal() {
                       <Input
                         id="email"
                         name="email"
-                        className="border-outline-variant focus:outline-primary rounded-xl border px-3 py-2"
+                        className="border-outline-variant bg-surface-container-high focus:outline-primary rounded-xl border px-3 py-2"
                         placeholder="example@gmail.com"
                       />
                       {signupFetcher.data?.errors?.email && (
@@ -242,7 +251,7 @@ export function AuthModal() {
                           id="password"
                           name="password"
                           type={isEyeOpen ? 'text' : 'password'}
-                          className="border-outline-variant focus:outline-primary w-full rounded-xl border px-3 py-2"
+                          className="border-outline-variant bg-surface-container-high focus:outline-primary w-full rounded-xl border px-3 py-2"
                           placeholder={isEyeOpen ? 'secretpassword' : '**********'}
                         />
                         <Button
@@ -282,7 +291,7 @@ export function AuthModal() {
                           id="repeat-password"
                           name="repeat-password"
                           type={isEyeOpen ? 'text' : 'password'}
-                          className="border-outline-variant focus:outline-primary w-full rounded-xl border px-3 py-2"
+                          className="border-outline-variant bg-surface-container-high focus:outline-primary w-full rounded-xl border px-3 py-2"
                           placeholder={isEyeOpen ? 'secretpassword' : '**********'}
                         />
                         <Button
@@ -325,13 +334,13 @@ export function AuthModal() {
                   <Button
                     type="submit"
                     isDisabled={signupFetcher.state !== 'idle'}
-                    className="bg-primary disabled:bg-primary/80 hover:bg-primary/95 mb-4 w-full rounded-2xl py-4 text-white transition"
+                    className="bg-primary disabled:bg-primary/80 text-on-primary mb-4 w-full cursor-pointer rounded-2xl py-4 font-semibold transition disabled:cursor-default"
                   >
                     Signup
                   </Button>
                   <Button
                     onPress={() => setIsSignupOpen((previous) => !previous)}
-                    className="group mx-auto mb-2 flex w-fit items-center gap-2 text-blue-800"
+                    className="group text-on-surface mx-auto mb-2 flex w-fit items-center gap-2"
                   >
                     Already have an account
                     <ArrowRight
